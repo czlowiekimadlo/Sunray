@@ -22,45 +22,12 @@
 	
 	class SunFrameSelectQuery extends SunFrameQuery{
 		
-		var $sort_c = NULL;
-		var $limit = NULL;
+		
 		
 		
 		function SunFrameSelectQuery($dbaccess, $table)
 		{
 			parent::__construct($dbaccess, $table);
-		}
-		
-		
-		function setSort($sort)
-		{
-			$this->sort_c = $sort;
-		}
-		
-		function parseSort($field)
-		{
-			$sort = $field->name;
-			
-			switch ($field->order)
-			{
-				case SUNFRAME_ASC:
-					$sort .= " asc";
-					break;
-					
-				case SUNFRAME_DESC:
-					$sort .= " desc";
-					break;
-				
-				default:
-					die("illegal query sort type");
-			}
-			
-			return $sort;
-		}
-		
-		function setLimit($limit)
-		{
-			$this->limit = $limit;
 		}
 		
 		function generateQuery()
@@ -126,9 +93,9 @@
 				
 				if ($this->limit->offset > 0)
 				{
-					$limit .= $this->limit->offset . ", " . $this->limit->limit;
+					$limit .= (int)$this->limit->offset . ", " . (int)$this->limit->limit;
 				} else {
-					$limit .= $this->limit->limit;
+					$limit .= (int)$this->limit->limit;
 				}
 				
 			} else {
@@ -144,21 +111,39 @@
 		{
 			$query = $this->generateQuery();
 			
-			$resource = $this->dbaccess->query($query);
-			if (!$resource)
+			$statement = $this->dbaccess->getStatement($query);
+			if (empty($statement))
 			{
 				return false;
 			}
 			
 			$data = array();
 			
-			while ($row = $this->dbaccess->fetch_assoc($resource))
+			if (!empty($this->conditions))
+			{
+				if (is_array($this->conditions))
+				{
+					foreach ($this->conditions as $condition) {
+						$this->bindValue($statement, $condition);
+					}
+				} 
+				else 
+				{
+					$this->bindValue($statement, $this->conditions);
+				}
+			}
+			
+			$statement->execute();
+			
+			while ($row = $statement->fetch(PDO::FETCH_ASSOC))
 			{
 				$data[] = new SunFrameQueryRow($row);
 			}
 			
 			return $data;
 		}
+		
+		
 	}
 	
 ?>

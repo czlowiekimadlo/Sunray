@@ -65,11 +65,6 @@
 		{
 			return $this->error;
 		}
-		
-		function close()
-		{
-			$this->dbaccess->close();	
-		}
 				
 	}
 	

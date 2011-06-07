@@ -54,6 +54,7 @@
 			
 		}
 		
+		//must be initiated after initFrame()
 		function initUser($userID = SUNFRAME_GUEST_USER)
 		{
 			if (!empty($_SESSION['user']))
@@ -61,6 +62,17 @@
 				$this->user = $_SESSION['user'];
 			} else {
 				$this->user = new SunFrameUser($userID);
+			}
+			
+			if (!empty($this->user->configuration->locale) && $this->user->configuration->locale != $this->locale->localeTag && !$this->locale->switched) 
+			{
+				if (SUNFRAME_DEBUG) 
+				{
+					echo $this->user->configuration->locale . " != " . $this->locale->localeTag;
+					$this->log->log($this->user->configuration->locale . " != " . $this->locale->localeTag);
+				}
+				$this->locale->loadLocale($this->user->configuration->locale);
+				echo "switching";
 			}
 		}
 		
@@ -91,9 +103,21 @@
 			if (SUNFRAME_DEBUG) $this->log = new SunFrameLog(SUNFRAME_DEBUG_LOG);
 		}
 		
+		// locale must be initiated after input and configuration
 		function initLocale()
 		{
-			$this->locale = new SunFrameLocale($this->configuration->fields['locale']->value);	
+			$locale = $this->input->getData("locale");
+			$switched = true;
+			if (empty($locale)) 
+			{
+				$locale = $this->configuration->fields['locale']->value;
+				$switched = false;
+			}
+			
+			$this->locale = new SunFrameLocale($locale);
+			$this->locale->switched = $switched;
+			//$_SESSION["locale"] = $this->locale->localeTag;
+			setcookie("locale", $this->locale->localeTag);
 		}
 		
 		function initFrame($dbinfo)
@@ -101,8 +125,8 @@
 			$this->initLog();
 			$this->connectDatabase($dbinfo);
 			$this->initConfiguration();
-			$this->initLocale();
 			$this->initInput();
+			$this->initLocale();
 			$this->initMail();
 			$this->initTemplate();
 		}
@@ -117,7 +141,6 @@
 				$_SESSION['user'] = $this->user;
 				session_write_close();
 			}
-			$this->database->close();
 			
 			if (!empty($this->log))$this->log->close();
 			

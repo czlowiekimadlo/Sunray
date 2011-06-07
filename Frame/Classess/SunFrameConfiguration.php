@@ -40,7 +40,7 @@
 			$data = $this->database->tables['config']->getData(NULL, $condition);
 			
 			if (!$data) {
-				$error = $this->database->getError();
+				$error = $this->database->tables['config']->getError();
 				print_r($error);
 				die("couldn't fetch configuration data");
 			}

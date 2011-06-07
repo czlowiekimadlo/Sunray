@@ -23,10 +23,11 @@
 	
 	class SunFrameUserConfiguration
 	{
+		var $locale;
 		
 		function SunFrameUserConfiguration()
 		{
-			
+			$this->locale = SUNFRAME_DEFAULT_LANG;
 		}
 		
 	}

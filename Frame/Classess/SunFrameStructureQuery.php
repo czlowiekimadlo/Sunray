@@ -40,13 +40,14 @@
 		function commit()
 		{
 			$query = $this->generateQuery();
-			$resource = $this->dbaccess->query($query);
-			if (!resource) {
+			$statement = $this->dbaccess->query($query);
+			if (empty($statement)) {
 				$this->error = new SunFrameDBError($this->dbaccess->errno(), $this->dbaccess->errmsg(), __LINE__, __FILE__);
 				return NULL;
 			}
 			$structure = array();
-			while ($row = $this->dbaccess->fetch_assoc($resource)) {
+			while ($row = $statement->fetch(PDO::FETCH_ASSOC))
+			{
 				$structure[] = $row;
 			}
 			

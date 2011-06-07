@@ -23,16 +23,16 @@
 	/*
 		CONFIGURATION
 	*/
-	define("SUNFRAME_DEBUG", false);
-	define("SUNFRAME_DEBUG_LOG", SITE_ROOT . "debug.log");
+	define("SUNFRAME_DEBUG", 					false);
+	define("SUNFRAME_DEBUG_LOG", 				SITE_ROOT . "debug.log");
 	
-	define("SUNFRAME_MAIN_CONFIG", 0);
-	define("SUNFRAME_DEFAULT_DB_SESSION", false);
-	define("SUNFRAME_DEFAULT_TITLE_SEPARATOR", " - ");
-	define("SUNFRAME_DEFAULT_TEMPLATE", "default");
-	define("SUNFRAME_DEFAULT_LANG", "en");
-	define("SUNFRAME_DEFAULT_REPOSITORY", "Templates/");
-	define("SUNFRAME_TEMPLATE_TMP", "tmp/");
+	define("SUNFRAME_MAIN_CONFIG", 				0);
+	define("SUNFRAME_DEFAULT_DB_SESSION", 		false);
+	define("SUNFRAME_DEFAULT_TITLE_SEPARATOR", 	" - ");
+	define("SUNFRAME_DEFAULT_TEMPLATE", 		"default");
+	define("SUNFRAME_DEFAULT_LANG", 			"en");
+	define("SUNFRAME_DEFAULT_REPOSITORY", 		"Templates/");
+	define("SUNFRAME_TEMPLATE_TMP", 			"tmp/");
 	
 	
 	/*
@@ -64,6 +64,8 @@
 	define("SUNFRAME_INPUT_GET", 1);
 	define("SUNFRAME_INPUT_POST", 2);
 	define("SUNFRAME_INPUT_COOKIE", 3);
+	define("SUNFRAME_INPUT_SESSION", 4);
+	
 
 
 ?>

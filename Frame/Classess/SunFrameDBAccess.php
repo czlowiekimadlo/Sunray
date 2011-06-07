@@ -25,9 +25,9 @@
 	//database access class
 	class SunFrameDBAccess {
 		
-		// $id - database connection id
-		// #res - last resource id
-		var $id, $res = NULL;
+		var $db = NULL;
+		var $statement = NULL;
+		var $res = NULL;
 		
 		//constructor
 		function SunFrameDBAccess($db) {
@@ -37,79 +37,46 @@
 		
 		//connect with database
 		function connect($db) {
-
-			if ($this->id != NULL) $this->close();
 			
-			$this->id = @mysqli_connect($db['host'], $db['user'], $db['pass'], $db['name']);
-			if(!$this->id) die("Database Connection Error on line " . __LINE__ . ", " . __FILE__);
-			if (SUNFRAME_DEBUG) echo "DB Access OK!";
+			$this->db = NULL;
 			
-			$this->query("SET NAMES 'utf8'");
-			//$this->query("SET NAMES 'utf8' COLLATE 'utf8_polish_ci'");
-		}
-		
-		//close database connection
-		function close() {
-			@mysqli_close($this->id);
-			$this->id = NULL;
+			try {
+				$this->db = new PDO('mysql:host=' . $db['host'] . ';dbname=' . $db['name'], $db['user'], $db['pass']);
+				$this->db->exec("SET CHARACTER SET utf8");
+			} catch (PDOException $e) {
+				die("Database Connection Error on line " . __LINE__ . ", " . __FILE__ . "<br/>" . $e->getMessage());
+			}
 		}
 		
 		function __destruct() {
-			$this->close();
+			$this->db = NULL;
 		}
 		
 		
-		
 		function query($query) {
-			$this->res = @mysqli_query($this->id, $query);
+			$this->res = $this->db->query($query);
 			return $this->res;
 			
 		}
 		
+		function getStatement($query) {
+			$this->statement = $this->db->query($query);
+			return $this->statement;
+		}
 		
-		function fetch_assoc($qid = NULL) {
-		    if (!$qid) $qid = $this->res;
-			return @mysqli_fetch_assoc($qid);
+		function affectedRows() {
+			if (empty($this->statement)) return 0;
+			return $this->statement->rowCount();
 		}
 		
 		
-		function fetch_array($qid = NULL) {
-			if (!$qid) $qid = $this->res;
-			return @mysqli_fetch_array($qid);
+		
+		function errno () {
+			if (!empty($this->db)) return $this->db->errorCode();	
 		}
 		
-		
-		function num_rows($qid = NULL) {
-			if (!$qid) $qid = $this->res;
-			return @mysqli_num_rows($qid);
-		}
-		
-		
-		function affected_rows() {
-			return @mysqli_affected_rows($this->id);
-		}
-		
-		
-		function errno()
-		{
-			if(!$this->id) {
-				return @mysqli_errno();
-			} else {
-				return @mysqli_errno($this->id);
-			}
-		}
-		
-		function errmsg()
-		{
-			if(!$this->id) {
-				return @mysqli_error();
-			} else {
-				return @mysqli_error($this->id);
-			}
-		}
-		
-		function escape_string($value) {
-			return @mysqli_real_escape_string($this->id, $value);
+		function errmsg () {
+			if (!empty($this->db)) return $this->db->errorInfo();
 		}
 		
 	}

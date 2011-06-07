@@ -35,7 +35,8 @@
 		
 		function log($entry)
 		{
-			fwrite(date("[Y/m/d G:i:s]") . " " . $entry . "\r\n");
+			if (!$this->fp) return;
+			fwrite($this->fp, date("[Y/m/d G:i:s]") . " " . $entry . "\r\n");
 		}
 		
 		function close()

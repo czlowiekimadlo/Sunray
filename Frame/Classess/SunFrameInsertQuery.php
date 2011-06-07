@@ -40,42 +40,15 @@
 				foreach ($this->fields as $field)
 				{
 					$fields_array[] = $field->name;
+					$values_array[] = ":v_" . $field->name;
 					
-					switch ($field->type)
-					{
-						case SUNFRAME_NUMBER:
-							$values_array[] = $this->dbaccess->escape_string($field->value);
-							break;
-							
-						case SUNFRAME_TEXT:
-							$values_array[] = "'" . $this->dbaccess->escape_string($field->value) . "'";
-							break;
-						
-						default:
-							die("illegal query field type");
-					}
 				}
 				$fields = implode(", ", $fields_array);
 				$values = implode(", ", $values_array);
 			} else {
 				$fields = $this->fields->name;
-				
-				switch ($field->type)
-				{
-					case SUNFRAME_NUMBER:
-						$values = $this->dbaccess->escape_string($field->value);
-						break;
-							
-					case SUNFRAME_TEXT:
-						$values = "'" . $this->dbaccess->escape_string($field->value) . "'";
-						break;
-						
-					default:
-						die("illegal query field type");
-				}
+				$values = ":v_" . $field->name;
 			}
-			
-			
 			
 			
 			$query = "insert into " . $this->table . "(" . $fields . ") values(" . $values . ")";
@@ -86,11 +59,30 @@
 		function commit()
 		{
 			$query = $this->generateQuery();
-			$resource = $this->dbaccess->query($query);
-			if (!$resource)
+			$statement = $this->dbaccess->getStatement($query);
+			if (empty($statement))
 			{
 				return false;
 			}
+			
+			if (!empty($this->fields))
+			{
+				if (is_array($this->fields))
+				{
+					foreach ($this->fields as $field) {
+						$this->bindValue($statement, $field);
+					}
+				} 
+				else 
+				{
+					$this->bindValue($statement, $this->fields);
+				}
+			}
+			
+			$statement->execute();
+			
+			
+			
 			return true;
 		}
 	}

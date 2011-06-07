@@ -60,11 +60,28 @@
 		function commit()
 		{
 			$query = $this->generateQuery();
-			$resource = $this->dbaccess->query($query);
-			if (!$resource)
+			
+			$statement = $this->dbaccess->getStatement($query);
+			if (empty($statement))
 			{
 				return false;
 			}
+			
+			if (!empty($this->conditions))
+			{
+				if (is_array($this->conditions))
+				{
+					foreach ($this->conditions as $condition) {
+						$this->bindValue($statement, $condition);
+					}
+				} 
+				else 
+				{
+					$this->bindValue($statement, $this->conditions);
+				}
+			}
+			
+			$statement->execute();
 			return true;
 		}
 	}

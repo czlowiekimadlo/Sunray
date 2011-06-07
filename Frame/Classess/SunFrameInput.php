@@ -30,18 +30,21 @@
 			$this->inputChain[SUNFRAME_INPUT_GET] = new SunFrameInputSource(SUNFRAME_INPUT_GET);
 			$this->inputChain[SUNFRAME_INPUT_POST] = new SunFrameInputSource(SUNFRAME_INPUT_POST);
 			$this->inputChain[SUNFRAME_INPUT_COOKIE] = new SunFrameInputSource(SUNFRAME_INPUT_COOKIE);
+			$this->inputChain[SUNFRAME_INPUT_SESSION] = new SunFrameInputSource(SUNFRAME_INPUT_SESSION);
 		}
 		
-		function getData($field, $input = SUNFRAME_INPUT_ALL)
+		function getData($field, $input = SUNFRAME_INPUT_ALL, $sanitize = true)
 		{
 			if ($input == SUNFRAME_INPUT_ALL)
 			{
-				$output = $this->inputChain[SUNFRAME_INPUT_GET]->getData($field);
-				if (empty($output)) $output = $this->inputChain[SUNFRAME_INPUT_POST]->getData($field);
-				if (empty($output)) $output = $this->inputChain[SUNFRAME_INPUT_COOKIE]->getData($field);
-				return $output;
+				foreach ($this->inputChain as $source)
+				{
+					$output = $source->getData($field, $sanitize);
+					if (!empty($output)) return $output;
+				}
+				return NULL;
 			} else {
-				if (!empty($this->inputChain[$input])) return $this->inputChain[$input]->getData($field);
+				if (!empty($this->inputChain[$input])) return $this->inputChain[$input]->getData($field, $sanitize);
 				else return NULL;
 			}
 		}

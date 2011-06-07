@@ -73,7 +73,7 @@
 			
 			if (empty($data) || $selectQuery->isError())
 			{
-				$this->error = new SunFrameDBError(NULL, NULL, __LINE__, __FILE__, $selectQuery->getError() . "\r\n" . $selectQuery->generateQuery());
+				$this->error = new SunFrameDBError(NULL, $selectQuery->getError() . "\r\n" . $selectQuery->generateQuery(), __LINE__, __FILE__);
 				return false;
 			}
 			

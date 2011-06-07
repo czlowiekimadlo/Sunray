@@ -30,20 +30,25 @@
 			$this->source = $source;
 		}
 		
-		function getData($field)
+		function getData($field, $sanitize = true)
 		{
+			$filter =  $sanitize ? FILTER_SANITIZE_SPECIAL_CHARS : FILTER_UNSAFE_RAW;
 			switch ($this->source)
 			{
 				case SUNFRAME_INPUT_GET:
-					return $_GET[$field];
+					return filter_input(INPUT_GET, $field, $filter);
 					break;
 					
 				case SUNFRAME_INPUT_POST:
-					return $_POST[$field];
+					return filter_input(INPUT_POST, $field, $filter);
 					break;
 					
 				case SUNFRAME_INPUT_COOKIE:
-					return $_COOKIE[$field];
+					return filter_input(INPUT_COOKIE, $field, $filter);
+					break;
+					
+				case SUNFRAME_INPUT_SESSION:
+					return $_SESSION[$field];
 					break;
 					
 				default:

@@ -16,6 +16,10 @@
 	
 	
 	***/
+	if (SUNFRAME_DEBUG) 
+	{
+		//error_reporting (E_ALL|E_NOTICE);
+	}
 	
 	require_once(SITE_ROOT . "Frame/Sunconst.php");
 	require_once(SITE_ROOT . "Frame/BasicFunctions.php");

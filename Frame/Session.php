@@ -100,10 +100,10 @@
 		$query = sprintf('delete from ' . $frame->database->prefix . 'session where date_add(access interval %d seconds) < now()', (int)$exp);
 		$resource = $frame->database->query($query);
 		
-		return $frame->database->dbaccess->affected_rows();
+		return $frame->database->dbaccess->affectedRows();
 	}
 	
-	if (SUNFRAME_DEFAULT_DB_SESSION) session_set_save_handler('open_session', 'close_session', 'read_session', 'write_session', 'destroy_session', 'clean_session');
+	if (SUNFRAME_DEFAULT_DB_SESSION && !SUNFRAME_DEBUG) session_set_save_handler('open_session', 'close_session', 'read_session', 'write_session', 'destroy_session', 'clean_session');
 	
 	
 	session_start();
